@@ -1,0 +1,27 @@
+div class="bookshelf header"
+  div class="constrain text-center"
+    h1 Add Books
+
+  - if @books.present? && @books.errors.any?
+    div class="alert alert-danger"
+      - @books.errors.messages.map do |key, message|
+        = message.first
+
+  div class="row"
+    div class="col-md-2 col-md-offset-5"
+      = simple_form_for(Book.new, url: books_path, :method => :post) do |f|
+        = f.input_field :name, placeHolder: "Input Book Name", class: "form-control", style: "resize:none"
+        br
+        = f.input_field :author_name, placeHolder: "Input Author Name", class: "form-control", style: "resize:none"
+        br
+        = f.input_field :rating, placeHolder: "Input Book Rating", class: "form-control", style: "resize:none"
+        br
+        | Please Choose Bookshelves
+        - Bookshelf.all.map do |shelf|
+          span.checkbox-bookshelf
+            input name="book[bookshelves_id][#{shelf.id}]" type="checkbox"
+            | #{shelf.description}
+            br
+        br
+        = f.button :submit, class: "btn btn-primary"
+

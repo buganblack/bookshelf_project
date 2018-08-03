@@ -1,0 +1,33 @@
+div class="bookshelf header"
+  div class="constrain text-center"
+    h1 Bookshelves
+
+  - if flash[:error].present?
+    div class="alert alert-danger"
+      = flash[:error]
+  - elsif flash[:notice].present?
+    div class="alert alert-success"
+      = flash[:notice]
+
+  div class="row"
+    div class="col-md-2 col-md-offset-2"
+      = simple_form_for(Bookshelf.new, url: bookshelves_path, :method => :post) do |f|
+        = f.input_field :title, placeHolder: "Input Bookshelf Title", class: "form-control", style: "resize:none"
+        br
+        = f.input_field :description, placeHolder: "Input Bookshelf Description", class: "form-control", style: "resize:none"
+        br
+        = f.button :submit, class: "btn btn-primary"
+
+    div class="col-md-2 col-md-offset-4"
+      = link_to "Add Books", new_book_path, class: "btn btn-default"
+
+  div class="row"
+    div class="col-md-2 col-md-offset-5"
+      = simple_form_for(:search, url: bookshelves_path, method: :get) do |f|
+        = f.input_field :description_id, collection: Bookshelf.all.map{ |record| [record.title, record.id] }.unshift(["Bookshelf List", 0]), selected: get_param["description_id"], onchange: "this.form.submit()", class: "form-control"
+
+- if @bookshelf_record.present?
+  = render partial: "show_bookshelf_records"
+
+- content_for :extra_javascripts do
+  = javascript_include_tag "bookshelf"

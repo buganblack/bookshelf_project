@@ -1,0 +1,38 @@
+div class="constrain text-center"
+  h1 = @bookshelf_record.title
+  h4 = @bookshelf_record.description
+  button type="button" class="btn btn-info btn-md" data-toggle="modal" data-target="#editModal"
+    | Edit Bookshelf
+  = link_to "Delete Bookshelf", bookshelf_path(@bookshelf_record.id), class: "btn btn-md btn-info", method: :delete, data: {confirm: "Are you sure you want to delete the Bookshelf?"}, style: "margin-left:15px"
+  - if @bookshelf_record.book_ids.present?
+    div class="col-md-1 col-md-offset-8"
+      = simple_form_for(:search, url: bookshelves_path, method: :get) do |f|
+        | Books Sort:
+        = f.input_field :sort_by, collection: [["Ascending", "ASC"], ["Descending", "DESC"]] , selected: get_param["sort_by"], onchange: "this.form.submit()", class: "form-control"
+        = f.hidden_field :description_id, value: @bookshelf_record.id
+    div class="col-md-2 col-md-offset-5"
+      - book_list = params[:search][:sort_by].eql?("DESC") ? @bookshelf_record.book_ids.reverse : @bookshelf_record.book_ids
+      - book_list.each do |book_id|
+        - book_record = Book.find(book_id)
+        | Book Name: 
+        = book_record.name
+        br
+        | Author Name: 
+        = book_record.author_name
+        br
+        | Rating: 
+        = book_record.rating
+        br
+        div class="row"
+          = render partial: "books/book_edit_modal", :locals => { book_record: book_record }
+          = link_to "Delete Book", book_path(book_record, bookshelf: @bookshelf_record), class: "btn btn-md btn-info", method: :delete, data: {confirm: "Are you sure you want to delete the Bookshelf?"}, style: "margin-left:15px"
+        br
+        br
+        br
+  - else
+    br
+    br
+    h2
+      | No books record for this shelf
+
+= render partial: "edit_modal"
